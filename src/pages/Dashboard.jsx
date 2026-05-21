@@ -1,93 +1,118 @@
 import { useEffect, useState } from "react";
 
-import MainLayout from "../layouts/MainLayout";
+import api from "../services/api";
 
+import Sidebar from "../components/Sidebar";
 import MetricCard from "../components/MetricCard";
-import RunScanButton from "../components/RunScanButton";
-import AIRecommendation from "../components/AIRecommendation";
+import FindingsTable from "../components/FindingsTable";
 
-import FindingsOverTime from "../charts/FindingsOverTime";
-
-import { getDashboard } from "../api/dashboardApi";
+import SeverityChart from "../charts/SeverityChart";
 
 export default function Dashboard() {
 
   const [data, setData] = useState(null);
 
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
 
-    loadDashboard();
+    fetchDashboard();
 
   }, []);
 
-  const loadDashboard = async () => {
+  const fetchDashboard = async () => {
 
-  try {
+    try {
 
-    const res = await getDashboard();
+      const response = await api.get("/dashboard");
 
-    console.log("Dashboard API Response:", res);
+      setData(response.data);
 
-    setData(res);
+    } catch (err) {
 
-  } catch (err) {
+      console.error(err);
 
-    console.error("Dashboard Error:", err);
-  }
-};
+    } finally {
 
-  if (!data) {
+      setLoading(false);
+
+    }
+  };
+
+  if (loading) {
 
     return (
-      <MainLayout>
-        Loading...
-      </MainLayout>
+
+      <div className="bg-slate-950 text-white h-screen flex items-center justify-center">
+
+        Loading Cloud Doctor...
+
+      </div>
     );
   }
 
   return (
-    <MainLayout>
 
-      <div className="flex justify-between mb-10">
+    <div className="flex bg-slate-950 min-h-screen text-white">
 
-        <h1 className="text-5xl font-bold">
+      <Sidebar />
+
+      <div className="flex-1 p-10">
+
+        <h1 className="text-5xl font-bold mb-10">
           Cloud Doctor Dashboard
         </h1>
 
-        <RunScanButton />
+        <div className="grid grid-cols-2 gap-6 mb-8">
+
+          <MetricCard
+            title="Health Score"
+            value={data.health}
+          />
+
+          <MetricCard
+            title="Security Score"
+            value={data.security}
+          />
+
+          <MetricCard
+            title="Cost Score"
+            value={data.cost}
+          />
+
+          <MetricCard
+            title="Availability"
+            value={data.availability}
+          />
+
+        </div>
+
+        <div className="grid grid-cols-2 gap-6 mb-8">
+
+          <SeverityChart
+            summary={data.summary}
+          />
+
+          <div className="bg-slate-900 p-8 rounded-2xl border border-slate-800">
+
+            <h2 className="text-2xl font-bold mb-6">
+              AI Recommendation
+            </h2>
+
+            <p className="text-gray-300 leading-8">
+              {data.ai_recommendation}
+            </p>
+
+          </div>
+
+        </div>
+
+        <FindingsTable
+          findings={data.findings}
+        />
 
       </div>
 
-      <div className="grid grid-cols-4 gap-6 mb-10">
-
-        <MetricCard
-          title="Health Score"
-          value={data.health}
-        />
-
-        <MetricCard
-          title="Security Score"
-          value={data.security}
-        />
-
-        <MetricCard
-          title="Cost Score"
-          value={data.cost}
-        />
-
-        <MetricCard
-          title="Availability"
-          value={data.availability}
-        />
-
-      </div>
-
-      <div className="mb-10">
-        <FindingsOverTime data={data.history} />
-      </div>
-
-      <AIRecommendation text={data.ai_recommendation} />
-
-    </MainLayout>
+    </div>
   );
 }
