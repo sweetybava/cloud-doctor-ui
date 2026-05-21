@@ -22,10 +22,19 @@ export default function Dashboard() {
 
   const loadDashboard = async () => {
 
+  try {
+
     const res = await getDashboard();
 
+    console.log("Dashboard API Response:", res);
+
     setData(res);
-  };
+
+  } catch (err) {
+
+    console.error("Dashboard Error:", err);
+  }
+};
 
   if (!data) {
 
