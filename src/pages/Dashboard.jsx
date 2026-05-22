@@ -1,117 +1,100 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
 
-import api from "../services/api";
-
-import Sidebar from "../components/Sidebar";
-import MetricCard from "../components/MetricCard";
+import Header from "../components/Header";
+import ScoreCard from "../components/ScoreCard";
 import FindingsTable from "../components/FindingsTable";
 
-import SeverityChart from "../charts/SeverityChart";
+const API =
+  "https://wetj9jofcg.execute-api.us-east-1.amazonaws.com/prod/dashboard";
 
 export default function Dashboard() {
 
   const [data, setData] = useState(null);
 
-  const [loading, setLoading] = useState(true);
-
   useEffect(() => {
-
-    fetchDashboard();
-
+    loadDashboard();
   }, []);
 
-  const fetchDashboard = async () => {
+  const loadDashboard = async () => {
 
     try {
 
-      const response = await api.get("/dashboard");
+      const response = await axios.get(API);
 
-      setData(response.data);
+      const result =
+        typeof response.data.body === "string"
+          ? JSON.parse(response.data.body)
+          : response.data;
+
+      setData(result);
 
     } catch (err) {
 
       console.error(err);
 
-    } finally {
-
-      setLoading(false);
-
     }
   };
 
-  if (loading) {
+  if (!data) {
 
     return (
-
-      <div className="bg-slate-950 text-white h-screen flex items-center justify-center">
-
-        Loading Cloud Doctor...
-
+      <div className="text-white p-10">
+        Loading...
       </div>
     );
   }
 
   return (
 
-    <div className="flex bg-slate-950 min-h-screen text-white">
+    <div className="ml-72 p-10 bg-[#020817] min-h-screen">
 
-      <Sidebar />
+      <Header title="Dashboard" />
 
-      <div className="flex-1 p-10">
+      <div className="grid grid-cols-5 gap-6">
 
-        <h1 className="text-5xl font-bold mb-10">
-          Cloud Doctor Dashboard
-        </h1>
+        <ScoreCard
+          title="Health Score"
+          score={data.health_score}
+        />
 
-        <div className="grid grid-cols-2 gap-6 mb-8">
+        <ScoreCard
+          title="Security Score"
+          score={data.security_score}
+        />
 
-          <MetricCard
-            title="Health Score"
-            value={data.health}
-          />
+        <ScoreCard
+          title="Cost Score"
+          score={data.cost_score}
+        />
 
-          <MetricCard
-            title="Security Score"
-            value={data.security}
-          />
+        <ScoreCard
+          title="Availability"
+          score={data.availability}
+        />
 
-          <MetricCard
-            title="Cost Score"
-            value={data.cost}
-          />
-
-          <MetricCard
-            title="Availability"
-            value={data.availability}
-          />
-
-        </div>
-
-        <div className="grid grid-cols-2 gap-6 mb-8">
-
-          <SeverityChart
-            summary={data.summary}
-          />
-
-          <div className="bg-slate-900 p-8 rounded-2xl border border-slate-800">
-
-            <h2 className="text-2xl font-bold mb-6">
-              AI Recommendation
-            </h2>
-
-            <p className="text-gray-300 leading-8">
-              {data.ai_recommendation}
-            </p>
-
-          </div>
-
-        </div>
-
-        <FindingsTable
-          findings={data.findings}
+        <ScoreCard
+          title="Findings"
+          score={data.total_findings}
         />
 
       </div>
+
+      <div className="bg-[#111c44] p-8 rounded-2xl mt-10">
+
+        <h2 className="text-2xl text-white mb-4">
+          AI Recommendation
+        </h2>
+
+        <p className="text-gray-300 leading-8">
+          {data.ai_recommendation}
+        </p>
+
+      </div>
+
+      <FindingsTable
+        findings={data.findings || []}
+      />
 
     </div>
   );

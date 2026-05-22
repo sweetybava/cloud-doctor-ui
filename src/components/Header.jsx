@@ -1,23 +1,25 @@
-import api from "../services/api";
-
-export default function Header() {
-
-  async function runScan() {
-
-    await api.post("/scan");
-
-    window.location.reload();
-  }
+export default function Header({ title }) {
 
   return (
 
-    <div className="flex justify-end mb-6">
+    <div className="flex justify-between items-center mb-10">
+
+      <div>
+
+        <h1 className="text-4xl text-white font-bold">
+          {title}
+        </h1>
+
+        <p className="text-gray-400 mt-2">
+          AWS Infrastructure Health Monitoring
+        </p>
+
+      </div>
 
       <button
-        onClick={runScan}
-        className="bg-blue-600 px-6 py-3 rounded-xl"
+        className="bg-cyan-500 px-6 py-3 rounded-xl text-black font-bold hover:bg-cyan-400"
       >
-        Run New Scan
+        Run Scan
       </button>
 
     </div>

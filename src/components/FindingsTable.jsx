@@ -1,39 +1,63 @@
-export default function FindingsTable({ findings }) {
+export default function FindingsTable({
+  findings
+}) {
+
   return (
-    <div className="bg-[#111c44] rounded-2xl p-6">
-      <h2 className="text-white text-2xl mb-6">
-        Top Issues
+
+    <div className="bg-[#111c44] rounded-2xl p-6 mt-10">
+
+      <h2 className="text-2xl text-white mb-6">
+        Findings
       </h2>
 
-      <div className="space-y-4">
-        {findings.map((item, index) => (
-          <div
-            key={index}
-            className="flex justify-between border-b border-gray-700 pb-4"
-          >
-            <div>
-              <h3 className="text-white">
-                {item.title}
-              </h3>
+      <table className="w-full text-left">
 
-              <p className="text-gray-400 text-sm">
-                {item.service}
-              </p>
-            </div>
+        <thead>
 
-            <div
-              className={`px-3 py-1 rounded-full text-sm
-              ${
-                item.severity === "Critical"
-                  ? "bg-red-600"
-                  : "bg-yellow-600"
-              }`}
+          <tr className="text-gray-400 border-b border-gray-700">
+
+            <th className="pb-4">Service</th>
+            <th className="pb-4">Severity</th>
+            <th className="pb-4">Title</th>
+            <th className="pb-4">Resource</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          {findings.map((finding, index) => (
+
+            <tr
+              key={index}
+              className="border-b border-gray-800"
             >
-              {item.severity}
-            </div>
-          </div>
-        ))}
-      </div>
+
+              <td className="py-4 text-white">
+                {finding.service}
+              </td>
+
+              <td className="py-4 text-red-400">
+                {finding.severity}
+              </td>
+
+              <td className="py-4 text-white">
+                {finding.title}
+              </td>
+
+              <td className="py-4 text-gray-400">
+                {finding.resource}
+              </td>
+
+            </tr>
+
+          ))}
+
+        </tbody>
+
+      </table>
+
     </div>
   );
 }

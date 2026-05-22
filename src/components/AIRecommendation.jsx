@@ -1,16 +1,14 @@
 export default function AIRecommendation({ text }) {
 
   return (
-    <div className="bg-[#071028] p-8 rounded-3xl border border-gray-800">
+    <div className="bg-[#111c44] p-8 rounded-2xl mt-8">
+        <h2 className="text-2xl text-white mb-4">
+            AI Recommendation
+        </h2>
 
-      <h2 className="text-3xl font-bold mb-6">
-        AI Recommendation
-      </h2>
-
-      <div className="text-gray-300 whitespace-pre-wrap leading-8">
-        {text}
-      </div>
-
+        <p className="text-gray-300 leading-8">
+            {data.ai_recommendation}
+        </p>    
     </div>
   );
 }
